@@ -10,5 +10,20 @@ category_sport = Category.objects.create(name_category = 'Спорт')
 category_movies = Category.objects.create(name_category = 'Фильмы')
 category_music = Category.objects.create(name_category = 'Музыка')
 4)
-news_1 = Post.objects.create(author = ilya, type_content = Post.article, title = 'Первая статья о спорте',
+article_1 = Post.objects.create(author = ilya, type_content = Post.article, title = 'Первая статья о спорте',
                              text = 'Здесь текст первой статьи о спорте')
+article_2 = Post.objects.create(author = maxim, type_content = Post.article, title = 'Первая статья о фильмах',
+                             text = 'Здесь текст первой статьи о фильмах')
+news_1 = Post.objects.create(author = ilya, type_content = Post.news, title = 'Первая новость о науке в спорте',
+                             text = 'Здесь текст первой статьи о науке в спорте')
+5)
+PostCategory.objects.create(post = article_1, category = category_sport)
+PostCategory.objects.create(post = article_2, category = category_movies)
+PostCategory.objects.create(post = news_1, category = category_science)
+PostCategory.objects.create(post = news_1, category = category_sport)
+6)
+comment_1 = Comment.objects.create(post = article_1, user = maxim.user, text = 'Интересно')
+comment_2 = Comment.objects.create(post = article_2, user = maxim.user, text = 'Что то новенькое')
+comment_3 = Comment.objects.create(post = news_1, user = ilya.user, text = 'Поставьте Лайк')
+comment_4 = Comment.objects.create(post = article_1, user = ilya.user, text = 'Спасибо')
+7)
