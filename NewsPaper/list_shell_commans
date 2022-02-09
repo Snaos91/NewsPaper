@@ -1,14 +1,19 @@
 1)
+
 ilya_user = User.objects.create_user(username = 'ilya', password = '12345')
 maxim_user = User.objects.create_user(username = 'maxim', password = '12345')
+
 2)
 ilya = Author.objects.create(user_profiles = ilya_user)
 maxim = Author.objects.create(user_profiles = maxim_user)
+
 3)
+
 category_science = Category.objects.create(name_category = 'Наука')
 category_sport = Category.objects.create(name_category = 'Спорт')
 category_movies = Category.objects.create(name_category = 'Фильмы')
 category_music = Category.objects.create(name_category = 'Музыка')
+
 4)
 article_1 = Post.objects.create(author = ilya, type_content = Post.article, title = 'Первая статья о спорте',
                              text = 'Здесь текст первой статьи о спорте')
@@ -17,13 +22,63 @@ article_2 = Post.objects.create(author = maxim, type_content = Post.article, tit
 news_1 = Post.objects.create(author = ilya, type_content = Post.news, title = 'Первая новость о науке в спорте',
                              text = 'Здесь текст первой статьи о науке в спорте')
 5)
+
 PostCategory.objects.create(post = article_1, category = category_sport)
 PostCategory.objects.create(post = article_2, category = category_movies)
 PostCategory.objects.create(post = news_1, category = category_science)
 PostCategory.objects.create(post = news_1, category = category_sport)
+
 6)
-comment_1 = Comment.objects.create(post = article_1, user = maxim.user, text = 'Интересно')
-comment_2 = Comment.objects.create(post = article_2, user = maxim.user, text = 'Что то новенькое')
-comment_3 = Comment.objects.create(post = news_1, user = ilya.user, text = 'Поставьте Лайк')
-comment_4 = Comment.objects.create(post = article_1, user = ilya.user, text = 'Спасибо')
+
+comment_1 = Comment.objects.create(post = article_1, user = maxim.user_profiles, text_comment = 'Интересно')
+comment_2 = Comment.objects.create(post = article_2, user = maxim.user_profiles, text_comment = 'Что то новенькое')
+comment_3 = Comment.objects.create(post = news_1, user = ilya.user_profiles, text_comment = 'Поставьте Лайк')
+comment_4 = Comment.objects.create(post = article_1, user = ilya.user_profiles, text_comment = 'Спасибо')
+
 7)
+
+like_1 = comment_1.like()
+like_2 = comment_1.like()
+like_3 = comment_1.dislike()
+like_4 = comment_1.like()
+like_5 = comment_2.like()
+like_6 = comment_3.like()
+like_7 = comment_3.like()
+like_8 = comment_3.like()
+like_9 = article_1.like()
+like_10 = article_1.like()
+
+8)
+rating_ilya = sum([post.rating_content*3 for post in Post.objects.filter(author=ilya)])
+rating_ilya += sum([comment.rating_content for comment in Comment.objects.filter(user=ilya.user_profiles)])
+rating_ilya += sum([comment.rating_content for comment in Comment.objects.filter(post__author=ilya)])
+ilya.update_rating(rating_ilya)
+
+rating_maxim = sum([post.rating_content*3 for post in Post.objects.filter(author=maxim)])
+rating_maxim += sum([comment.rating_content for comment in Comment.objects.filter(user=maxim.user_profiles)])
+rating_maxim += sum([comment.rating_content for comment in Comment.objects.filter(post__author=maxim)])
+maxim.update_rating(rating_maxim)
+
+9)
+best_author = Author.objects.all().order_by('-rating')[0]
+
+print(f'Лучший пользователь: {best_author.user_profiles.username}, рейтинг: {best_author.rating}!')
+
+10)
+
+best_article = Post.objects.filter(type_content='ART').order_by('-rating_content')[0]
+
+print(f'Лучшая статья:\nДата: {best_article.data_time_creation}\n\
+Автор: {best_article.author.user_profiles.username}\n\
+Рейтинг: {best_article.rating_content}\n\
+Заколовок: {best_article.title}\n\
+Превью: {best_article.preview()}')
+
+11)
+
+for comment in Comment.objects.filter(post = best_article):
+    print("Дата:", comment.data_time_creation)
+    print("Автор:", comment.user.username)
+    print("Рейтинг:", comment.rating_content)
+    print("Комментарий:", comment.text_comment)
+    print("")
