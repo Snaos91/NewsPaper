@@ -1,0 +1,23 @@
+{% extends 'default.html' %}
+{% load custom_filters %}
+<!-- Название у нас будет products -->
+{% block title %}
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим все товары -->
+{% block content %}
+<h1>Количество статей: {{ post | length }}</h1>
+<table>
+    {% for a in post %}
+        <tr>
+            <td>
+                {{ a.title | censor }}
+                <br>
+                {{ a.data_time_creation | date:'d.M.Y' }}
+                <br>
+                {{ a.text | truncatechars:50 | censor }}
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock content %}

@@ -1,0 +1,6 @@
+.conteiner {
+  left: 50%;
+  margin-left: -500px;
+  position: absolute;
+  width: 1000px;
+}

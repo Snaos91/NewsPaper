@@ -1,0 +1,17 @@
+{% extends 'default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+News_id
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам товар, ID которого было передано в адрес -->
+{% block content %}
+    <h2>
+        {{ post.title | censor }}
+        <br>
+        {{ post.data_time_creation | date:'d.M.Y H:m' }}
+    </h2>
+    <br>
+    {{ post.text  | censor }}
+{% endblock content %}
