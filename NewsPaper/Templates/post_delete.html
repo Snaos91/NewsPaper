@@ -1,0 +1,26 @@
+{% extends 'default.html' %}
+{% load custom_filters %}
+
+{% block title %} Post list {% endblock title %}
+ 
+{% block content %}
+<h2>Вы действительно хотите удалить новость</h2>
+
+    <h2>
+        {{ post.title | censor }}
+        <br>
+        {{ post.data_time_creation | date:'d.M.Y H:m' }}
+    </h2>
+    <br>
+    {{ post.text  | censor }}
+ 
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Подтвердить">
+</form>
+
+<form action="{% url 'post_news' %}">
+    <button type="submit">Отмена</button>
+</form>
+
+{% endblock content %} 

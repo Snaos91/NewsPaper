@@ -21,6 +21,16 @@ article_2 = Post.objects.create(author = maxim, type_content = Post.article, tit
                              text = 'Здесь текст первой статьи о фильмах')
 news_1 = Post.objects.create(author = ilya, type_content = Post.news, title = 'Первая новость о науке в спорте',
                              text = 'Здесь текст первой статьи о науке в спорте')
+news_2 = Post.objects.create(author = ilya, type_content = Post.news, title = 'Первая новость о науке в спорте',
+                             text = 'Здесь текст второй статьи о науке в спорте')
+news_3 = Post.objects.create(author = ilya, type_content = Post.news, title = 'Первая новость о науке в спорте',
+                             text = 'Здесь текст третьей статьи о науке в спорте')
+news_4 = Post.objects.create(author = ilya, type_content = Post.news, title = 'Первая новость о науке в спорте',
+                             text = 'Здесь текст четвертой статьи о науке в спорте')
+news_5 = Post.objects.create(author = ilya, type_content = Post.news, title = 'Первая новость о науке в спорте',
+                             text = 'Здесь текст пятой статьи о науке в спорте')
+news_6 = Post.objects.create(author = ilya, type_content = Post.news, title = 'Первая новость о науке в спорте',
+                             text = 'Здесь текст шестой статьи о науке в спорте')
 5)
 
 PostCategory.objects.create(post = article_1, category = category_sport)
