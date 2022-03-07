@@ -7,6 +7,12 @@
 <form method="POST">
     {% csrf_token %}
     {{ form }}
+    </br>
     <input type="submit" value="Добавить новость или статью">
 </form>
+
+<form action="{% url 'post_news' %}">
+    <button type="submit">К списку новостей</button>
+</form>
+
 {% endblock content %}
