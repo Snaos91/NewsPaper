@@ -1,8 +1,12 @@
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.shortcuts import redirect
 
-from .models import Post
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+
+from .models import Post, Category
 from .filters import PostFilter
 from .forms import PostForm
 
@@ -24,6 +28,12 @@ class PostDetail(DetailView):
     model = Post
     template_name = 'post_id.html'
     context_object_name = 'post'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        id = self.kwargs.get('pk')
+        context['user_category'] = Category.objects.filter(post__pk=id, subscribers=self.request.user)
+        return context
 
 
 class PostSearch(PostList):
@@ -57,4 +67,19 @@ class PostDeleteView(DeleteView):
     template_name = 'post_delete.html'
     queryset = Post.objects.all()
     success_url = '..'
+
+
+@login_required
+def subscribe(request, **kwargs):
+    user = request.user
+    category_id = kwargs['pk']
+    category = Category.objects.get(pk=int(category_id))
+
+    if user not in category.subscribers.all():
+        category.subscribers.add(user)
+
+    else:
+        category.subscribers.remove(user)
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 

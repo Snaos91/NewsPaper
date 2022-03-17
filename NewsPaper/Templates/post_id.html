@@ -21,4 +21,29 @@ News_id
         <button type="submit">К списку статей/новостей</button>
     </form>
 
+{% if request.user.is_authenticated %}
+        <p>
+            {% for category in post.category.all %}
+                {% if not category in user_category %}
+                    Подписаться на категорию:
+                    <a href="{% url 'subscribe' category.pk %}"><br>{{ category.name_category }}</a>
+                {% else %}
+
+                {% endif %}
+            {% endfor %}
+
+          {% for category in post.category.all %}
+            {% if category in user_category %}
+            Вы подписаны на категории:
+            <a href="{% url 'subscribe' category.pk %}"><br>{{ category.name_category }}</a>
+            {% else %}
+            <br>
+            <br>
+            У Вас нет активных подписок
+            {% endif %}
+            {% endfor %}
+
+        </p>
+{% endif %}
+
 {% endblock content %}

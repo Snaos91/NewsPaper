@@ -16,6 +16,7 @@ class Author(models.Model):
 
 class Category(models.Model):
     name_category = models.CharField(max_length=128, unique=True)
+    subscribers = models.ManyToManyField(User)
 
     def __str__(self):
         return f'{self.name_category}'
@@ -50,6 +51,9 @@ class Post(models.Model):
 
     def preview(self):
         return self.text[0:123] + '...'
+
+    def __str__(self):
+        return f'{self.title}'
 
     def get_absolute_url(self):
         return f'/news/{self.id}'
