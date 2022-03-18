@@ -31,19 +31,18 @@ News_id
 
                 {% endif %}
             {% endfor %}
-
-          {% for category in post.category.all %}
-            {% if category in user_category %}
+        </p>
+        <p>
+            {% if user_category|length > 0 %}
             Вы подписаны на категории:
+            {% for category in user_category %}
             <a href="{% url 'subscribe' category.pk %}"><br>{{ category.name_category }}</a>
+            {% endfor %}
             {% else %}
-            <br>
-            <br>
             У Вас нет активных подписок
             {% endif %}
-            {% endfor %}
-
         </p>
+
 {% endif %}
 
 {% endblock content %}

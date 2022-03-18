@@ -3,9 +3,6 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import redirect
 
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-
 from .models import Post, Category
 from .filters import PostFilter
 from .forms import PostForm
@@ -29,10 +26,16 @@ class PostDetail(DetailView):
     template_name = 'post_id.html'
     context_object_name = 'post'
 
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     id = self.kwargs.get('pk')
+    #     context['user_category'] = Category.objects.filter(post__pk=id, subscribers=self.request.user)
+    #     return context
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         id = self.kwargs.get('pk')
-        context['user_category'] = Category.objects.filter(post__pk=id, subscribers=self.request.user)
+        context['user_category'] = Category.objects.filter(subscribers=self.request.user)
         return context
 
 
