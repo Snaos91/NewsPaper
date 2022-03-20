@@ -1,58 +1,105 @@
 import logging
-
+from django.template.loader import render_to_string
+import datetime
 from django.conf import settings
+from collections import defaultdict
+from django.core.mail import EmailMultiAlternatives
+
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 from django.core.management.base import BaseCommand
 from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
-from django_apscheduler import util
+
+from news.models import Post
 
 logger = logging.getLogger(__name__)
 
 
-def my_job():
-    print("MyJob")
+def send_posts(email_list, posts):
+    # на случай, если там только один адрес, а не список
+    if isinstance(email_list, str):
+        subscriber_list = [email_list, ]
+    else:
+        subscriber_list = email_list
+
+    email_form = settings.DEFAULT_FROM_EMAIL
+    subject = 'В категориях, на которые вы подписаны появились новые статьи'
+    text_message = 'В категориях, на которые вы подписаны появились новые статьи'
+
+    # рендерим в строку шаблон письма и передаём туда переменные, которые в нём используем
+    render_html_template = render_to_string('post_list_week.html', {'posts': posts, 'subject': subject})
+
+    # формируем письмо
+    msg = EmailMultiAlternatives(subject, text_message, email_form, list(subscriber_list))
+
+    # прикрепляем html-шаблон
+    msg.attach_alternative(render_html_template, 'text/html')
+    # отправляем
+    msg.send()
 
 
-# The `close_old_connections` decorator ensures that database connections, that have become
-# unusable or are obsolete, are closed before and after your job has run. You should use it
-# to wrap any jobs that you schedule that access the Django database in any way.
-@util.close_old_connections
+# наша задача по выводу текста на экран
+def send_posts_to_email_weekly():
+    """
+    таск который выбирает все посты, опубликованные за неделю и рассылающий
+    (через вызов вспомогательной функции) их всем, кто подписан на категории, куда эти статьи входят
+    :return: None
+    """
+    # берём посты за последние 7 дней
+    # здесь мы получаем queryset
+    today = datetime.datetime.now()
+    last_week = today - datetime.timedelta(days=7)
+    last_week_posts_qs = Post.objects.filter(data_time_creation__gte=last_week)
+
+    # собираем в словарь список пользователей и список постов, которые им надо разослать
+    posts_for_user = defaultdict(set)  # user -> posts
+
+    for post in last_week_posts_qs:
+        for category in post.category.all():
+            for user in category.subscribers.all():
+                posts_for_user[user].add(post)
+
+    # непосредственно рассылка
+    for user, posts in posts_for_user.items():
+        send_posts(user.email, posts)
+
+
+# функция, которая будет удалять неактуальные задачи
 def delete_old_job_executions(max_age=604_800):
-    """
-    This job deletes APScheduler job execution entries older than `max_age` from the database.
-    It helps to prevent the database from filling up with old historical records that are no
-    longer useful.
-
-    :param max_age: The maximum length of time to retain historical job execution records.
-                    Defaults to 7 days.
-    """
+    """This job deletes all apscheduler job executions older than `max_age` from the database."""
     DjangoJobExecution.objects.delete_old_job_executions(max_age)
 
 
 class Command(BaseCommand):
-    help = "Runs APScheduler."
+    help = "Runs apscheduler."
 
     def handle(self, *args, **options):
         scheduler = BlockingScheduler(timezone=settings.TIME_ZONE)
         scheduler.add_jobstore(DjangoJobStore(), "default")
 
+        # добавляем работу нашему задачнику
         scheduler.add_job(
-            my_job,
-            trigger=CronTrigger(second="*/10"),  # Every 10 seconds
-            id="my_job",  # The `id` assigned to each job MUST be unique
+            send_posts_to_email_weekly,
+            trigger=CronTrigger(day_of_week="mon",
+                                hour="09",
+                                minute="00"),
+            # То же, что и интервал, но задача тригера таким образом более понятна django
+            id="send_posts_to_email_weekly",  # уникальный айди
             max_instances=1,
             replace_existing=True,
         )
-        logger.info("Added job 'my_job'.")
+        logger.info("Added job 'send_posts_to_email_weekly'.")
 
         scheduler.add_job(
             delete_old_job_executions,
             trigger=CronTrigger(
                 day_of_week="mon", hour="00", minute="00"
-            ),  # Midnight on Monday, before start of the next work week.
+            ),
+
+            # Каждую неделю будут удаляться старые задачи, которые либо не удалось выполнить, либо уже выполнять не
+            # надо.
             id="delete_old_job_executions",
             max_instances=1,
             replace_existing=True,

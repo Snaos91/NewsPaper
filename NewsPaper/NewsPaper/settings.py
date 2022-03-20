@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_filters',
-    'django_apscheduler',
+    "django_apscheduler",
 
     'news.apps.NewsConfig',
     'account.apps.AccountConfig',
