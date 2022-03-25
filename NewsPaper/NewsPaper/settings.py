@@ -49,8 +49,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
 
-    'debug_toolbar',
-
 ]
 
 MIDDLEWARE = [
@@ -61,7 +59,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 SITE_ID = 1
@@ -159,8 +156,6 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
-# end allauth
-
 # send_mail
 
 EMAIL_HOST = 'smtp.yandex.ru'
@@ -168,7 +163,6 @@ EMAIL_PORT = 465
 EMAIL_HOST_USER = 'armsnaos'
 EMAIL_HOST_PASSWORD = 'bzouztgpzdplosxc'
 EMAIL_USE_SSL = True
-# end send_mail
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
 
@@ -177,8 +171,11 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
-# endapscheduler
 
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
+# CELERY/REDIS
+
+CELERY_BROKER_URL = 'redis://:wE19lk6SAEhrUWvGtdUzaYMlnkpHz6gG@redis-14879.c293.eu-central-1-1.ec2.cloud.redislabs.com:14879/0'
+CELERY_RESULT_BACKEND = 'redis://:wE19lk6SAEhrUWvGtdUzaYMlnkpHz6gG@redis-14879.c293.eu-central-1-1.ec2.cloud.redislabs.com:14879/0'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

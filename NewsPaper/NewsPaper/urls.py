@@ -21,5 +21,4 @@ urlpatterns = [
     path('news/', include('news.urls')),
     path('accounts/', include('allauth.urls')),
     path('account/', include('account.urls')),
-    path('__debug__/', include('debug_toolbar.urls')),
 ]
