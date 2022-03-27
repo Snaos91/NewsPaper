@@ -179,3 +179,12 @@ CELERY_RESULT_BACKEND = 'redis://:wE19lk6SAEhrUWvGtdUzaYMlnkpHz6gG@redis-14879.c
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+# cache
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
+    }
+}
