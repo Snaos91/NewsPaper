@@ -14,4 +14,11 @@ News_id
     </h2>
     <br>
     {{ post.text  | censor }}
+    <br>
+    <br>
+
+    <form action="{% url 'post_news' %}">
+        <button type="submit">К списку статей/новостей</button>
+    </form>
+
 {% endblock content %}

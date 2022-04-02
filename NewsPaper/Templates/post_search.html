@@ -1,0 +1,34 @@
+{% extends 'default.html' %}
+
+
+{% block title %}
+{% endblock title %}
+
+
+{% block content %}
+
+<form method="GET">
+    {{ filter.form }}
+    <input type="submit" value="Найти">
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Заголовок</th>
+            <th>Дата</th>
+            <th>Автор</th>
+            <th>Текст статьи</th>
+    </thead>
+    <tbody>
+    {% for post in filter.qs %}
+    <tr>
+        <td> {{ post.title }} </td>
+        <td> {{ post.data_time_creation }} </td>
+        <td> {{ post.author.user_profiles.username }} </td>
+        <td> {{ post.text }} </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}

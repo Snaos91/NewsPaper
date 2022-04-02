@@ -10,9 +10,15 @@ class Author(models.Model):
         self.rating = new_rating
         self.save()
 
+    def __str__(self):
+        return f'{self.user_profiles}'
+
 
 class Category(models.Model):
     name_category = models.CharField(max_length=128, unique=True)
+
+    def __str__(self):
+        return f'{self.name_category}'
 
 
 class Post(models.Model):
@@ -44,6 +50,9 @@ class Post(models.Model):
 
     def preview(self):
         return self.text[0:123] + '...'
+
+    def get_absolute_url(self):
+        return f'/news/{self.id}'
 
 
 class PostCategory(models.Model):

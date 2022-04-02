@@ -1,17 +1,18 @@
 {% extends 'default.html' %}
 {% load custom_filters %}
-<!-- Название у нас будет products -->
-{% block title %}
-{% endblock title %}
 
-<!-- В контенте на странице мы выводим все товары -->
+{% block title %} {% endblock title %}
+
 {% block content %}
 <h1>Количество статей: {{ post | length }}</h1>
 <table>
     {% for a in post %}
         <tr>
             <td>
-                {{ a.title | censor }}
+                <a href="{% url 'post_detail' a.id %}">{{ a.title | censor }}</a>
+                <br>
+                <a href="{% url 'post_update' a.id %}"><u>Редактировать</u></a>
+                <a href="{% url 'post_delete' a.id %}"><u> Удалить </u></a>
                 <br>
                 {{ a.data_time_creation | date:'d.M.Y' }}
                 <br>
@@ -20,4 +21,35 @@
         </tr>
     {% endfor %}
 </table>
+
+<br>
+<h3> <a href="{% url 'post_add' %}">Добавить новую новость/статью</a> </h3>
+<br>
+<h3> <a href="{% url 'post_search' %}">Страница поиска статей/новостей</a> </h3>
+
+{% if is_paginated %}
+
+    <!-- Если доступна предыдущая страница, то даём ссылку на неё и самую первую страницу -->
+    {% if page_obj.has_previous %}
+        <a href="?page=1">First</a>
+        <a href="?page={{ page_obj.previous_page_number }}"><<<</a>
+    {% endif %}
+
+    <!-- Показываем только текущую страницу и ближайшие к ней, чтобы список не тянулся и не захламлял страницу -->
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <a>{{ num }}</a>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    <!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">>>></a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+    {% endif %}
+
+{% endif %}
+
 {% endblock content %}
