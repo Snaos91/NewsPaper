@@ -2,10 +2,13 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import redirect
+import logging
 
 from .models import Post, Category
 from .filters import PostFilter
 from .forms import PostForm
+
+logger = logging.getLogger(__name__)
 
 
 class PostList(ListView):
@@ -25,12 +28,6 @@ class PostDetail(DetailView):
     model = Post
     template_name = 'post_id.html'
     context_object_name = 'post'
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     id = self.kwargs.get('pk')
-    #     context['user_category'] = Category.objects.filter(post__pk=id, subscribers=self.request.user)
-    #     return context
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -54,6 +51,8 @@ class PostCreateView(PermissionRequiredMixin, CreateView):
     permission_required = ('news.add_post',)
     template_name = 'post_add.html'
     form_class = PostForm
+
+    logger.debug('one')
 
 
 class PostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
